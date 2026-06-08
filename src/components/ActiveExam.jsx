@@ -4,21 +4,9 @@ import {
   Bookmark, ArrowRight, CheckCircle2, ShieldAlert
 } from "lucide-react";
 
-interface ActiveExamProps {
-  studentName: string;
-  onExamFinish: () => void;
-}
-
-interface QuestionItem {
-  number: number;
-  text: string;
-  options: string[];
-  correct: number;
-}
-
-export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProps) {
+export default function ActiveExam({ studentName, onExamFinish }) {
   // Configured questions (Full 20 items to activate all indicator bubbles)
-  const examQuestions: QuestionItem[] = [
+  const examQuestions = [
     {
       number: 1,
       text: "What is correct about a circular doubly linked list's prev pointer in the head node?",
@@ -242,16 +230,16 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
   ];
 
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [bookmarks, setBookmarks] = useState<Record<number, boolean>>({});
-  const [visited, setVisited] = useState<Record<number, boolean>>({ 1: true });
+  const [answers, setAnswers] = useState({});
+  const [bookmarks, setBookmarks] = useState({});
+  const [visited, setVisited] = useState({ 1: true });
 
   const activeQ = examQuestions[currentIdx];
 
   // Time tracker (starts at 01:45:22)
   const [secondsLeft, setSecondsLeft] = useState(1 * 3600 + 45 * 60 + 22);
 
-  // Tab switch detected warning metrics (Warining 1 of 3)
+  // Tab switch detected warning metrics (Warning 1 of 3)
   const [tabSwitchWarning, setTabSwitchWarning] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [warningsCount, setWarningsCount] = useState(0);
@@ -264,7 +252,7 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
   }, []);
 
   // Format HH:MM:SS
-  const formatTime = (secs: number) => {
+  const formatTime = (secs) => {
     const hh = Math.floor(secs / 3600).toString().padStart(2, "0");
     const mm = Math.floor((secs % 3600) / 60).toString().padStart(2, "0");
     const ss = (secs % 60).toString().padStart(2, "0");
@@ -291,7 +279,7 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
             examName: "Data Structures Mid-Term",
             type: "Tab Switch Detected",
             confidence: 98,
-            description: "Examinee navigated away from browser browser page."
+            description: "Examinee navigated away from browser page."
           })
         }).catch(err => console.error(err));
       }
@@ -301,7 +289,7 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [studentName]);
 
-  const handleSelectOption = (optIdx: number) => {
+  const handleSelectOption = (optIdx) => {
     setAnswers((prev) => ({ ...prev, [activeQ.number]: optIdx }));
   };
 
@@ -317,6 +305,7 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
     }
   };
 
+  // Handle finalize submission modal trigger
   const handleFinish = () => {
     setShowConfirmModal(true);
   };
@@ -387,7 +376,6 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
             <div className="grid grid-cols-5 gap-2.5">
               {Array.from({ length: 20 }, (_, i) => {
                 const num = i + 1;
-                // Since our actual quiz questions has length 5, let's map the rest to sample unvisited bubbles
                 const isActual = num <= examQuestions.length;
                 const index = num - 1;
                 const isSelected = isActual && currentIdx === index;
@@ -609,7 +597,7 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
               </span>
             </div>
 
-            <div className="bg-red-950/20 border border-red-500/20 p-3.5 rounded-lg text-left text-xs space-y-1.5">
+            <div className="bg-red-955/20 border border-red-500/20 p-3.5 rounded-lg text-left text-xs space-y-1.5">
               <span className="font-bold text-red-300 font-mono text-[10px] uppercase block tracking-wider">Termination Threats Notice:</span>
               <p className="text-slate-350 leading-relaxed">
                 If the warning counter exceeds <strong>3 issues</strong>, your active exam session will be terminated immediately. No grade credit will be yielded.
@@ -643,7 +631,7 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="py-2 bg-slate-800 hover:bg-slate-750 text-slate-300 font-semibold text-xs font-mono uppercase rounded-lg border border-slate-700 cursor-pointer"
+                className="py-2 bg-slate-800 hover:bg-slate-755 text-slate-300 font-semibold text-xs font-mono uppercase rounded-lg border border-slate-700 cursor-pointer"
               >
                 No, Resume
               </button>

@@ -1,35 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { 
-  Sparkles, Search, Plus, Trash2, Filter, 
-  UploadCloud, Brain, HelpCircle, CheckCircle2, ChevronRight, RefreshCw
+  Sparkles, Search, Plus, Trash2, 
+  Brain, HelpCircle, CheckCircle2, RefreshCw
 } from "lucide-react";
-import { Question } from "../types";
 
-interface QuestionBankProps {
-  token: string;
-}
-
-export default function QuestionBank({ token }: QuestionBankProps) {
-  const [questions, setQuestions] = useState<Question[]>([]);
+export default function QuestionBank({ token }) {
+  const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [filtDifficulty, setFiltDifficulty] = useState<"ALL" | "Easy" | "Medium" | "Hard">("ALL");
+  const [filtDifficulty, setFiltDifficulty] = useState("ALL");
 
   // New Question form
   const [newText, setNewText] = useState("");
-  const [newType, setNewType] = useState<"Multiple Choice" | "Short Answer" | "Coding">("Multiple Choice");
-  const [newDiff, setNewDiff] = useState<"Easy" | "Medium" | "Hard">("Medium");
+  const [newType, setNewType] = useState("Multiple Choice");
+  const [newDiff, setNewDiff] = useState("Medium");
   const [newMarks, setNewMarks] = useState(5);
   const [newSubject, setNewSubject] = useState("Data Structures");
 
   // AI Syllabus generator state
   const [syllabusInput, setSyllabusInput] = useState("");
-  const [aiDiff, setAiDiff] = useState<"Easy" | "Medium" | "Hard">("Medium");
+  const [aiDiff, setAiDiff] = useState("Medium");
   const [aiCount, setAiCount] = useState(3);
   const [isAiGenerating, setIsAiGenerating] = useState(false);
-  const [aiSuggestions, setAiSuggestions] = useState<Question[]>([]);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [aiSuggestions, setAiSuggestions] = useState([]);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
 
   const fetchQuestions = async () => {
     try {
@@ -45,7 +40,7 @@ export default function QuestionBank({ token }: QuestionBankProps) {
     fetchQuestions();
   }, []);
 
-  const handleAddQuestion = async (e: React.FormEvent) => {
+  const handleAddQuestion = async (e) => {
     e.preventDefault();
     if (!newText) return;
     setErrorMsg(null);
@@ -71,12 +66,12 @@ export default function QuestionBank({ token }: QuestionBankProps) {
       setSuccessMsg("Question registered successfully!");
       setTimeout(() => setSuccessMsg(null), 4000);
       fetchQuestions();
-    } catch (err: any) {
+    } catch (err) {
       setErrorMsg(err.message);
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id) => {
     try {
       const res = await fetch(`/api/questions/${id}`, {
         method: "DELETE",
@@ -122,14 +117,14 @@ export default function QuestionBank({ token }: QuestionBankProps) {
       setAiSuggestions(data.questions || []);
       setSuccessMsg(`Simulated AI analysis complete! Generated ${data.questions?.length || 0} proposals.`);
       setTimeout(() => setSuccessMsg(null), 5000);
-    } catch (err: any) {
+    } catch (err) {
       setErrorMsg(err.message || "An error occurred with the Gemini model pipeline.");
     } finally {
       setIsAiGenerating(false);
     }
   };
 
-  const handleApproveAiSuggestion = async (suggested: Question, index: number) => {
+  const handleApproveAiSuggestion = async (suggested, index) => {
     try {
       const res = await fetch("/api/questions", {
         method: "POST",
@@ -165,21 +160,21 @@ export default function QuestionBank({ token }: QuestionBankProps) {
   });
 
   return (
-    <div id="question-bank-root" className="space-y-6">
+    <div id="question-bank-root" className="space-y-6 animate-fade-in">
       
       {/* AI Supercharge Curation Section */}
       <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl relative overflow-hidden space-y-4">
         {/* Glow effect */}
         <div className="absolute top-0 right-0 w-80 h-40 bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800/80 pb-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-lg bg-teal-500/10 border border-teal-500/20 text-teal-400">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-sm font-bold font-mono uppercase tracking-wider text-white">AI Question Curation Hub</h3>
-              <p className="text-xs text-slate-400 mt-1">Supercharge your evaluations by inputting syllabus details to generate rigorous questions via Gemini 3.5 Flash.</p>
+              <p className="text-xs text-slate-400 mt-1 font-sans">Supercharge your evaluations by inputting syllabus details to generate rigorous questions via Gemini AI.</p>
             </div>
           </div>
           <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-slate-950 border border-slate-850 text-slate-500">
@@ -196,7 +191,7 @@ export default function QuestionBank({ token }: QuestionBankProps) {
                 value={syllabusInput}
                 onChange={(e) => setSyllabusInput(e.target.value)}
                 placeholder="Example: Data structures including doubly-linked lists, binary search trees, worst-case rotation rules in Red-Black trees or QuickSort recursion pivot analysis..."
-                className="w-full min-h-[90px] bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 placeholder:text-slate-650 focus:outline-none focus:border-slate-700 leading-normal"
+                className="w-full min-h-[90px] bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 placeholder:text-slate-650 focus:outline-none focus:border-slate-700 leading-normal font-sans"
               />
             </div>
 
@@ -204,12 +199,13 @@ export default function QuestionBank({ token }: QuestionBankProps) {
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono text-slate-500">Difficulty:</span>
                 <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-850">
-                  {(["Easy", "Medium", "Hard"] as const).map((diff) => (
+                  {["Easy", "Medium", "Hard"].map((diff) => (
                     <button
                       key={diff}
+                      type="button"
                       onClick={() => setAiDiff(diff)}
                       className={`py-1 px-2.5 text-[10px] font-mono rounded cursor-pointer ${
-                        aiDiff === diff ? "bg-slate-800 text-white border border-slate-700/50" : "text-slate-500 hover:text-slate-350"
+                        aiDiff === diff ? "bg-slate-800 text-white border border-slate-705" : "text-slate-505 hover:text-slate-350"
                       }`}
                     >
                       {diff}
@@ -219,14 +215,15 @@ export default function QuestionBank({ token }: QuestionBankProps) {
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-slate-500">Amount:</span>
+                <span className="text-xs font-mono text-slate-505">Amount:</span>
                 <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-850">
-                  {([1, 3, 5] as const).map((cnt) => (
+                  {[1, 3, 5].map((cnt) => (
                     <button
                       key={cnt}
+                      type="button"
                       onClick={() => setAiCount(cnt)}
                       className={`py-1 px-2 text-[10px] font-mono rounded cursor-pointer ${
-                        aiCount === cnt ? "bg-slate-800 text-white border border-slate-700/50" : "text-slate-500 hover:text-slate-350"
+                        aiCount === cnt ? "bg-slate-800 text-white border border-slate-705" : "text-slate-550 hover:text-slate-350"
                       }`}
                     >
                       {cnt}
@@ -239,7 +236,7 @@ export default function QuestionBank({ token }: QuestionBankProps) {
                 type="button"
                 onClick={handleAiGenerate}
                 disabled={isAiGenerating}
-                className="ml-auto py-2 px-5 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-bold font-mono text-xs uppercase tracking-wider rounded-lg shadow-md hover:shadow-teal-500/10 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="ml-auto py-2 px-5 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-955 font-bold font-mono text-xs uppercase tracking-wider rounded-lg shadow-md hover:shadow-teal-500/10 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {isAiGenerating ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Brain className="w-4 h-4" />}
                 {isAiGenerating ? "Assembling Context..." : "AI Generate Questions"}
@@ -248,20 +245,21 @@ export default function QuestionBank({ token }: QuestionBankProps) {
           </div>
 
           {/* AI Suggested Sidebar Column */}
-          <div className="lg:col-span-4 bg-slate-950/60 p-4 border border-slate-850/60 rounded-xl space-y-3 max-h-[220px] overflow-y-auto">
+          <div className="lg:col-span-4 bg-slate-1050/60 p-4 border border-slate-850 rounded-xl space-y-3 max-h-[220px] overflow-y-auto">
             <span className="text-[10px] font-mono uppercase tracking-widest text-slate-500 block">AI Suggestion Deck</span>
             
             <div className="space-y-2">
               {aiSuggestions.map((s, idx) => (
-                <div key={idx} className="p-2.5 bg-slate-900 border border-slate-800 rounded-lg space-y-2">
-                  <p className="text-[11px] text-slate-300 font-sans line-clamp-2 leading-relaxed">
+                <div key={idx} className="p-3 bg-slate-900 border border-slate-800 rounded-lg space-y-2">
+                  <p className="text-[11px] text-slate-305 font-sans leading-relaxed">
                     {s.questionText}
                   </p>
                   <div className="flex items-center justify-between gap-2 border-t border-slate-800/40 pt-1.5 text-[10px] font-mono">
                     <span className="text-teal-400 font-bold uppercase">{s.difficulty} // {s.marks}M</span>
                     <button
+                      type="button"
                       onClick={() => handleApproveAiSuggestion(s, idx)}
-                      className="px-2 py-0.5 bg-emerald-500 text-slate-950 font-semibold rounded text-[9px] hover:bg-emerald-400 transition-colors uppercase cursor-pointer"
+                      className="px-2 py-0.5 bg-emerald-500 text-slate-955 font-semibold rounded text-[9px] hover:bg-emerald-400 transition-colors uppercase cursor-pointer"
                     >
                       Approve list
                     </button>
@@ -270,7 +268,7 @@ export default function QuestionBank({ token }: QuestionBankProps) {
               ))}
 
               {aiSuggestions.length === 0 && (
-                <div className="text-center py-6 text-slate-550 font-mono text-[11px] leading-relaxed">
+                <div className="text-center py-6 text-slate-500 font-mono text-[11px] leading-relaxed">
                   {isAiGenerating ? "Gemini model working..." : "Syllabus analyzer offline. Input topics and request AI generation above."}
                 </div>
               )}
@@ -280,13 +278,13 @@ export default function QuestionBank({ token }: QuestionBankProps) {
       </div>
 
       {errorMsg && (
-        <div className="p-3 bg-red-950/40 border border-red-500/30 text-xs text-red-300 rounded-lg">
+        <div className="p-3 bg-red-955/40 border border-red-500/30 text-xs text-red-300 rounded-lg">
           {errorMsg}
         </div>
       )}
 
       {successMsg && (
-        <div className="p-3 bg-teal-950/40 border border-teal-500/30 text-xs text-teal-350 rounded-lg flex items-center gap-2">
+        <div className="p-3 bg-teal-955/40 border border-teal-500/30 text-xs text-teal-350 rounded-lg flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
           <span>{successMsg}</span>
         </div>
@@ -307,17 +305,17 @@ export default function QuestionBank({ token }: QuestionBankProps) {
                   placeholder="Filter curriculum..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="bg-slate-950 border border-slate-850 rounded-lg py-1 pl-8 pr-4 text-xs font-mono text-slate-200 placeholder:text-slate-650 focus:outline-none focus:border-slate-750"
+                  className="bg-slate-950 border border-slate-850 rounded-lg py-1 pl-8 pr-4 text-xs font-mono text-slate-205 placeholder:text-slate-650 focus:outline-none focus:border-slate-750"
                 />
               </div>
 
-              <div className="flex bg-slate-950 p-1 rounded border border-slate-850">
-                {(["ALL", "Easy", "Medium", "Hard"] as const).map((df) => (
+              <div className="flex bg-slate-955 p-1 rounded border border-slate-850">
+                {["ALL", "Easy", "Medium", "Hard"].map((df) => (
                   <button
                     key={df}
                     onClick={() => setFiltDifficulty(df)}
                     className={`py-0.5 px-2 text-[9px] font-mono uppercase tracking-wider rounded cursor-pointer ${
-                      filtDifficulty === df ? "bg-slate-850 text-white" : "text-slate-500 hover:text-slate-350"
+                      filtDifficulty === df ? "bg-slate-850 text-white" : "text-slate-500 hover:text-slate-355"
                     }`}
                   >
                     {df}
@@ -341,15 +339,15 @@ export default function QuestionBank({ token }: QuestionBankProps) {
               <tbody className="divide-y divide-slate-800/30">
                 {filtered.map((q) => (
                   <tr key={q._id} className="hover:bg-slate-950/10">
-                    <td className="p-3 text-slate-250 leading-relaxed font-sans">{q.questionText}</td>
+                    <td className="p-3 text-slate-205 leading-relaxed font-sans">{q.questionText}</td>
                     <td className="p-3 text-center text-slate-400">{q.type}</td>
                     <td className="p-3 text-center">
                       <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold leading-none ${
                         q.difficulty === "Easy" 
                           ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
                           : q.difficulty === "Medium" 
-                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" 
-                            : "bg-red-500/10 text-red-00 text-red-400 border border-red-500/20"
+                            ? "bg-amber-500/10 text-amber-400 border border-amber-505/20" 
+                            : "bg-red-500/10 text-red-100 border border-red-500/20"
                       }`}>
                         {q.difficulty}
                       </span>
@@ -357,8 +355,9 @@ export default function QuestionBank({ token }: QuestionBankProps) {
                     <td className="p-3 text-center font-bold text-white">{q.marks} pts</td>
                     <td className="p-3 text-right">
                       <button
+                        type="button"
                         onClick={() => handleDelete(q._id)}
-                        className="p-1.5 hover:bg-red-950/20 text-slate-500 hover:text-red-400 rounded transition-colors cursor-pointer border border-transparent hover:border-red-500/10"
+                        className="p-1.5 hover:bg-red-955/20 text-slate-500 hover:text-red-400 rounded transition-colors cursor-pointer border border-transparent hover:border-red-500/10"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -381,29 +380,29 @@ export default function QuestionBank({ token }: QuestionBankProps) {
         {/* Manual Addition Sidebar Column */}
         <div className="lg:col-span-4">
           <form onSubmit={handleAddQuestion} className="bg-slate-900 border border-slate-800 p-6 rounded-2xl space-y-4 shadow-xl">
-            <h4 className="text-xs font-mono uppercase tracking-wider text-white font-bold flex items-center gap-1.5 border-b border-slate-820 pb-2">
-              <Plus className="w-4.5 h-4.5 text-teal-400" />
+            <h4 className="text-xs font-mono uppercase tracking-wider text-white font-bold flex items-center gap-1.5 border-b border-slate-800 pb-2">
+              <Plus className="w-4.5 h-4.5 text-teal-405" />
               Manual Question Registry
             </h4>
 
             <div className="space-y-1">
-              <label className="text-xs font-mono text-slate-400 uppercase">Question Formulation</label>
+              <label className="text-xs font-mono text-slate-400 uppercase font-bold">Question Formulation</label>
               <textarea
                 required
                 value={newText}
                 onChange={(e) => setNewText(e.target.value)}
                 placeholder="Draft curriculum question text explicitly..."
-                className="w-full bg-slate-950 border border-slate-800 text-xs text-slate-200 rounded-lg p-2.5 min-h-[80px] focus:outline-none focus:border-slate-700 leading-normal"
+                className="w-full bg-slate-950 border border-slate-800 text-xs text-slate-202 rounded-lg p-2.5 min-h-[80px] focus:outline-none focus:border-slate-700 leading-normal font-sans"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-mono text-slate-500 uppercase">Question Type</label>
+                <label className="text-[10px] font-mono text-slate-505 uppercase">Question Type</label>
                 <select
                   value={newType}
-                  onChange={(e: any) => setNewType(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 px-2 text-xs font-mono text-slate-300 focus:outline-none"
+                  onChange={(e) => setNewType(e.target.value)}
+                  className="w-full bg-slate-955 border border-slate-800 rounded-lg py-1.5 px-2 text-xs font-mono text-slate-300 focus:outline-none"
                 >
                   <option value="Multiple Choice">Multiple Choice</option>
                   <option value="Short Answer">Short Answer</option>
@@ -412,7 +411,7 @@ export default function QuestionBank({ token }: QuestionBankProps) {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-mono text-slate-500 uppercase">Marks Weight</label>
+                <label className="text-[10px] font-mono text-slate-505 uppercase">Marks Weight</label>
                 <input
                   type="number"
                   required
@@ -420,18 +419,18 @@ export default function QuestionBank({ token }: QuestionBankProps) {
                   max="50"
                   value={newMarks}
                   onChange={(e) => setNewMarks(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 px-2.5 text-xs font-mono text-slate-300 focus:outline-none"
+                  className="w-full bg-slate-955 border border-slate-800 rounded-lg py-1.5 px-2.5 text-xs font-mono text-slate-300 focus:outline-none"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-mono text-slate-500 uppercase">Difficulty</label>
+                <label className="text-[10px] font-mono text-slate-505 uppercase">Difficulty</label>
                 <select
                   value={newDiff}
-                  onChange={(e: any) => setNewDiff(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 px-2 text-xs font-mono text-slate-300 focus:outline-none"
+                  onChange={(e) => setNewDiff(e.target.value)}
+                  className="w-full bg-slate-955 border border-slate-800 rounded-lg py-1.5 px-2 text-xs font-mono text-slate-300 focus:outline-none"
                 >
                   <option value="Easy">Easy</option>
                   <option value="Medium">Medium</option>
@@ -440,20 +439,20 @@ export default function QuestionBank({ token }: QuestionBankProps) {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-mono text-slate-500 uppercase">Subject</label>
+                <label className="text-[10px] font-mono text-slate-505 uppercase">Subject</label>
                 <input
                   type="text"
                   required
                   value={newSubject}
                   onChange={(e) => setNewSubject(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 px-2.5 text-xs font-mono text-slate-300 focus:outline-none"
+                  className="w-full bg-slate-955 border border-slate-800 rounded-lg py-1.5 px-2.5 text-xs font-mono text-slate-300 focus:outline-none"
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full py-2 bg-slate-800 hover:bg-slate-750 text-xs font-bold font-mono uppercase tracking-wider rounded-lg border border-slate-700 hover:text-white transition-colors cursor-pointer"
+              className="w-full py-2 bg-slate-800 hover:bg-slate-755 text-xs font-bold font-mono uppercase tracking-wider rounded-lg border border-slate-705 hover:text-white transition-colors cursor-pointer"
             >
               Push into curriculum
             </button>

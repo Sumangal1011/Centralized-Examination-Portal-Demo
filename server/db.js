@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { MongoClient, Db } from "mongodb";
+import { MongoClient } from "mongodb";
 
 // Simulating MongoDB shell/Mongoose with file-backed storage
 const DB_FILE = path.join(process.cwd(), "data", "db_store.json");
@@ -10,16 +10,7 @@ if (!fs.existsSync(path.dirname(DB_FILE))) {
   fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
 }
 
-interface DBStructure {
-  users: any[];
-  appeals: any[];
-  questions: any[];
-  proctorStudents: any[];
-  violationIncidents: any[];
-  audits: any[];
-}
-
-const DEFAULT_DB: DBStructure = {
+const DEFAULT_DB = {
   users: [
     { _id: "u1", username: "admin", password: "pbkdf2_sha256$somehash$admin123", role: "admin", name: "Dr. Catherine Vance" },
     { _id: "u2", username: "examiner", password: "pbkdf2_sha256$somehash$examiner123", role: "examiner", name: "Prof. Arthur Pendelton" },
@@ -70,8 +61,8 @@ const DEFAULT_DB: DBStructure = {
 };
 
 // Global MongoDB Database references
-let mongoClient: MongoClient | null = null;
-let mongoDb: Db | null = null;
+let mongoClient = null;
+let mongoDb = null;
 const mongoUri = process.env.MONGODB_URI;
 
 // Initialize dynamic connection and seeds
@@ -85,7 +76,7 @@ export async function initDB() {
       console.log("Successfully connected to MongoDB.");
 
       // Seed any missing collections
-      const collections = Object.keys(DEFAULT_DB) as (keyof DBStructure)[];
+      const collections = Object.keys(DEFAULT_DB);
       for (const colName of collections) {
         const col = mongoDb.collection(colName);
         const count = await col.countDocuments();
@@ -112,7 +103,7 @@ function initFileDB() {
     try {
       const parsed = JSON.parse(fs.readFileSync(DB_FILE, "utf-8"));
       let updated = false;
-      const keys = Object.keys(DEFAULT_DB) as (keyof DBStructure)[];
+      const keys = Object.keys(DEFAULT_DB);
       for (const k of keys) {
         if (!parsed[k]) {
           parsed[k] = DEFAULT_DB[k];
@@ -128,7 +119,7 @@ function initFileDB() {
   }
 }
 
-function readFromDisk(): DBStructure {
+function readFromDisk() {
   try {
     return JSON.parse(fs.readFileSync(DB_FILE, "utf-8"));
   } catch (e) {
@@ -136,33 +127,31 @@ function readFromDisk(): DBStructure {
   }
 }
 
-function saveToDisk(data: DBStructure) {
+function saveToDisk(data) {
   // Ensure folder exists (double-check)
   fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
   fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 
 // Model simulation
-class Collection<T extends { _id: string }> {
-  private key: keyof DBStructure;
-
-  constructor(key: keyof DBStructure) {
+class Collection {
+  constructor(key) {
     this.key = key;
   }
 
-  async find(query: Partial<T> = {}): Promise<T[]> {
+  async find(query = {}) {
     if (mongoDb) {
       try {
-        const list = await mongoDb.collection(this.key).find(query as any).toArray();
-        return list as unknown as T[];
+        const list = await mongoDb.collection(this.key).find(query).toArray();
+        return list;
       } catch (err) {
         console.error(`MongoDB find error on ${this.key}:`, err);
       }
     }
 
     const data = readFromDisk();
-    const list = (data[this.key] || []) as T[];
-    return list.filter((item: any) => {
+    const list = data[this.key] || [];
+    return list.filter((item) => {
       for (const qKey in query) {
         if (item[qKey] !== query[qKey]) {
           return false;
@@ -172,11 +161,11 @@ class Collection<T extends { _id: string }> {
     });
   }
 
-  async findOne(query: Partial<T>): Promise<T | null> {
+  async findOne(query) {
     if (mongoDb) {
       try {
-        const item = await mongoDb.collection(this.key).findOne(query as any);
-        return item as unknown as T | null;
+        const item = await mongoDb.collection(this.key).findOne(query);
+        return item;
       } catch (err) {
         console.error(`MongoDB findOne error on ${this.key}:`, err);
       }
@@ -186,16 +175,16 @@ class Collection<T extends { _id: string }> {
     return records.length > 0 ? records[0] : null;
   }
 
-  async create(record: Omit<T, "_id"> & Partial<{ _id: string }>): Promise<T> {
+  async create(record) {
     const generatedId = record._id || Math.random().toString(36).substr(2, 9);
     const newRecord = {
       _id: generatedId,
       ...record
-    } as unknown as T;
+    };
 
     if (mongoDb) {
       try {
-        await mongoDb.collection(this.key).insertOne(newRecord as any);
+        await mongoDb.collection(this.key).insertOne(newRecord);
         return newRecord;
       } catch (err) {
         console.error(`MongoDB create error on ${this.key}:`, err);
@@ -210,10 +199,10 @@ class Collection<T extends { _id: string }> {
     return newRecord;
   }
 
-  async updateOne(query: Partial<T>, updates: Partial<T>): Promise<boolean> {
+  async updateOne(query, updates) {
     if (mongoDb) {
       try {
-        const result = await mongoDb.collection(this.key).updateOne(query as any, { $set: updates });
+        const result = await mongoDb.collection(this.key).updateOne(query, { $set: updates });
         return result.modifiedCount > 0 || result.matchedCount > 0;
       } catch (err) {
         console.error(`MongoDB updateOne error on ${this.key}:`, err);
@@ -224,7 +213,7 @@ class Collection<T extends { _id: string }> {
     const list = data[this.key] || [];
     let updated = false;
 
-    const newList = list.map((item: any) => {
+    const newList = list.map((item) => {
       let matches = true;
       for (const qKey in query) {
         if (item[qKey] !== query[qKey]) {
@@ -246,10 +235,10 @@ class Collection<T extends { _id: string }> {
     return updated;
   }
 
-  async deleteOne(query: Partial<T>): Promise<boolean> {
+  async deleteOne(query) {
     if (mongoDb) {
       try {
-        const result = await mongoDb.collection(this.key).deleteOne(query as any);
+        const result = await mongoDb.collection(this.key).deleteOne(query);
         return result.deletedCount > 0;
       } catch (err) {
         console.error(`MongoDB deleteOne error on ${this.key}:`, err);
@@ -260,7 +249,7 @@ class Collection<T extends { _id: string }> {
     const list = data[this.key] || [];
     const initialLen = list.length;
 
-    const newList = list.filter((item: any) => {
+    const newList = list.filter((item) => {
       let matches = true;
       for (const qKey in query) {
         if (item[qKey] !== query[qKey]) {
@@ -282,10 +271,10 @@ class Collection<T extends { _id: string }> {
 
 // Simulated Mongo Models
 export const MongoModels = {
-  User: new Collection<any>("users"),
-  Appeal: new Collection<any>("appeals"),
-  Question: new Collection<any>("questions"),
-  ProctorStudent: new Collection<any>("proctorStudents"),
-  ViolationIncident: new Collection<any>("violationIncidents"),
-  Audit: new Collection<any>("audits")
+  User: new Collection("users"),
+  Appeal: new Collection("appeals"),
+  Question: new Collection("questions"),
+  ProctorStudent: new Collection("proctorStudents"),
+  ViolationIncident: new Collection("violationIncidents"),
+  Audit: new Collection("audits")
 };

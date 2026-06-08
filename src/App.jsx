@@ -14,19 +14,19 @@ import ActiveExam from "./components/ActiveExam";
 import AuditLogs from "./components/AuditLogs";
 
 export default function App() {
-  const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
-  const [user, setUser] = useState<{ username: string; role: "student" | "examiner" | "admin"; name: string } | null>(
-    localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")!) : null
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [user, setUser] = useState(
+    localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null
   );
 
   // Examiner active sidebar tabs: overview, appeals, analytics, review, curation, audits
-  const [activeTab, setActiveTab] = useState<"overview" | "appeals" | "analytics" | "review" | "curation" | "audits">("overview");
-  const [selectedStudentForReview, setSelectedStudentForReview] = useState<string>("Alex Johnson");
+  const [activeTab, setActiveTab] = useState("overview");
+  const [selectedStudentForReview, setSelectedStudentForReview] = useState("Alex Johnson");
 
   // Student stages: verify, testing, finished
-  const [studentStage, setStudentStage] = useState<"verify" | "testing" | "finished">("verify");
+  const [studentStage, setStudentStage] = useState("verify");
 
-  const handleLoginSuccess = (newToken: string, loggedInUser: { username: string; role: "student" | "examiner" | "admin"; name: string }) => {
+  const handleLoginSuccess = (newToken, loggedInUser) => {
     setToken(newToken);
     setUser(loggedInUser);
     localStorage.setItem("token", newToken);
@@ -61,7 +61,7 @@ export default function App() {
     }
   }, [token]);
 
-  const navigateToReview = (studentName: string) => {
+  const navigateToReview = (studentName) => {
     setSelectedStudentForReview(studentName);
     setActiveTab("review");
   };

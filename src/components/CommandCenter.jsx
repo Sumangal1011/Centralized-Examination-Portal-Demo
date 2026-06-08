@@ -3,19 +3,13 @@ import {
   Users, BookOpen, AlertTriangle, ShieldCheck, 
   Search, RefreshCw, Radio, ExternalLink, ShieldAlert
 } from "lucide-react";
-import { ProctorStudent } from "../types";
 
-interface CommandCenterProps {
-  token: string;
-  onSelectStudentForReview: (studentName: string) => void;
-}
-
-export default function CommandCenter({ token, onSelectStudentForReview }: CommandCenterProps) {
-  const [students, setStudents] = useState<ProctorStudent[]>([]);
+export default function CommandCenter({ token, onSelectStudentForReview }) {
+  const [students, setStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"ALL" | "Verified" | "Suspicious" | "Flagged">("ALL");
+  const [filterStatus, setFilterStatus] = useState("ALL");
   const [loading, setLoading] = useState(false);
-  const [customViolationAlert, setCustomViolationAlert] = useState<string | null>(null);
+  const [customViolationAlert, setCustomViolationAlert] = useState(null);
 
   // Load students from DB
   const fetchStudents = async () => {
@@ -38,7 +32,7 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
     return () => clearInterval(interval);
   }, []);
 
-  const triggerSimulation = async (studentName: string, type: string, confidence: number, desc: string) => {
+  const triggerSimulation = async (studentName, type, confidence, desc) => {
     try {
       const res = await fetch("/api/proctor/trigger-violation", {
         method: "POST",
@@ -82,7 +76,7 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
             <Radio className="w-4 h-4 animate-ping text-teal-400 shrink-0" />
             Integrity Simulation Deck
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-400 mt-1 font-sans">
             Test the full-stack event pipeline by triggering real-time AI security incidents for live examinees.
           </p>
         </div>
@@ -95,13 +89,13 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
           </button>
           <button
             onClick={() => triggerSimulation("Liam Thompson", "Secondary Device Detected", 91, "Phone screen illuminated near user hand.")}
-            className="px-3 py-1.5 bg-red-950/40 hover:bg-red-900/40 border border-red-500/20 rounded text-xs font-mono text-red-300 transition-colors cursor-pointer"
+            className="px-3 py-1.5 bg-red-955/40 hover:bg-red-900/40 border border-red-500/20 rounded text-xs font-mono text-red-300 transition-colors cursor-pointer"
           >
             + Sim Device (Liam)
           </button>
           <button
             onClick={() => triggerSimulation("Sarah Chen", "Out of Frame / Left Desk", 88, "Candidate seat unoccupied.")}
-            className="px-3 py-1.5 bg-yellow-950/40 hover:bg-yellow-900/40 border border-yellow-500/20 rounded text-xs font-mono text-yellow-300 transition-colors cursor-pointer"
+            className="px-3 py-1.5 bg-yellow-955/40 hover:bg-yellow-905/40 border border-yellow-500/20 rounded text-xs font-mono text-yellow-300 transition-colors cursor-pointer"
           >
             + Sim Out-of-Frame (Sarah)
           </button>
@@ -123,50 +117,50 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
       )}
 
       {/* KPI Overviews */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-slate-300">
         
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
+          <div className="w-10 h-10 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 bg-teal-950/30">
             <Users className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-[10px] uppercase font-mono text-slate-500 font-bold">Total Students</div>
-            <div className="text-2xl font-bold text-white tracking-tight">4,250</div>
+            <div className="text-[10px] uppercase font-mono text-slate-505 font-bold">Total Students</div>
+            <div className="text-2xl font-bold font-mono text-white tracking-tight">4,250</div>
             <div className="text-[10px] text-slate-400 mt-0.5">Enrolled Examinees</div>
           </div>
         </div>
 
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+          <div className="w-10 h-10 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 bg-blue-950/30">
             <BookOpen className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-[10px] uppercase font-mono text-slate-500 font-bold">Active Exams</div>
-            <div className="text-2xl font-bold text-white tracking-tight">12</div>
+            <div className="text-[10px] uppercase font-mono text-slate-505 font-bold">Active Exams</div>
+            <div className="text-2xl font-bold font-mono text-white tracking-tight">12</div>
             <div className="text-[10px] text-slate-400 mt-0.5">Simultaneous Sessions</div>
           </div>
         </div>
 
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+          <div className="w-10 h-10 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-450 bg-rose-950/30">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-[10px] uppercase font-mono text-slate-500 font-bold">Total Violations</div>
-            <div className="text-2xl font-bold text-white tracking-tight">
+            <div className="text-[10px] uppercase font-mono text-slate-505 font-bold">Total Violations</div>
+            <div className="text-2xl font-bold font-mono text-white tracking-tight">
               {students.reduce((acc, s) => acc + (s.violationsCount || 0), 0) + 78}
             </div>
-            <div className="text-[10px] text-rose-400 mt-0.5 animate-pulse">Flagged System-wide</div>
+            <div className="text-[10px] text-rose-300 mt-0.5 animate-pulse font-mono">Flagged System-wide</div>
           </div>
         </div>
 
         <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-440 bg-emerald-950/30">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-[10px] uppercase font-mono text-slate-500 font-bold">Avg. Integrity</div>
-            <div className="text-2xl font-bold text-white tracking-tight">92%</div>
+            <div className="text-[10px] uppercase font-mono text-slate-505 font-bold">Avg. Integrity</div>
+            <div className="text-2xl font-bold font-mono text-white tracking-tight">92%</div>
             <div className="text-[10px] text-emerald-400 mt-0.5">Compliant Cohorts</div>
           </div>
         </div>
@@ -180,7 +174,7 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/60 p-4 border border-slate-800/80 rounded-xl">
           <div className="flex items-center gap-2">
             <h3 className="text-base font-semibold font-mono text-white uppercase tracking-wider">Live Proctoring Feeds</h3>
-            <span className="px-2 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-[10px] uppercase font-mono text-teal-400">Real-time</span>
+            <span className="px-2 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-[10px] uppercase font-mono text-teal-400 font-bold tracking-widest leading-none">Real-time</span>
           </div>
           
           <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
@@ -193,13 +187,13 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
                 placeholder="Search candidate or exam..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg py-1.5 pl-8 pr-4 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-slate-700"
+                className="w-full bg-slate-950 border border-slate-880 rounded-lg py-1.5 pl-8 pr-4 text-xs font-mono text-slate-200 placeholder:text-slate-650 focus:outline-none focus:border-slate-750"
               />
             </div>
 
             {/* Filter Buttons */}
             <div className="flex gap-1 bg-slate-950 p-1 rounded-lg border border-slate-850">
-              {(["ALL", "Verified", "Suspicious", "Flagged"] as const).map((st) => (
+              {["ALL", "Verified", "Suspicious", "Flagged"].map((st) => (
                 <button
                   key={st}
                   onClick={() => setFilterStatus(st)}
@@ -228,11 +222,8 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
               ? "border-red-500/80 shadow-[0_0_15px_rgba(239,68,68,0.15)]" 
               : isYellowRisk 
                 ? "border-amber-500/60 shadow-[0_0_12px_rgba(245,158,11,0.1)]" 
-                : "border-slate-800 hover:border-slate-700";
+                : "border-slate-800 hover:border-slate-705";
 
-            // Avatar Seed Generator or Webcams Helper
-            const femaleSeeds = ["sarah", "elena", "priya"];
-            const isFemale = femaleSeeds.includes(student.avatarSeed);
             const avatarUrl = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${student.avatarSeed}&backgroundColor=0f172a`;
 
             return (
@@ -241,7 +232,7 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
                 className={`bg-slate-900 rounded-xl overflow-hidden border ${borderColors} transition-all duration-300 flex flex-col justify-between group relative`}
               >
                 {/* Simulated Webcam Video Frame */}
-                <div className="relative aspect-video bg-slate-950 flex items-center justify-center overflow-hidden">
+                <div className="relative aspect-video bg-slate-955 flex items-center justify-center overflow-hidden">
                   
                   {/* Status Overlay Badge */}
                   <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-900/90 border border-slate-800 text-[10px] font-mono uppercase z-10 backdrop-blur-sm">
@@ -249,7 +240,7 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
                       student.status === "Flagged" 
                         ? "bg-red-500 animate-ping" 
                         : student.status === "Suspicious" 
-                          ? "bg-amber-400" 
+                          ? "bg-amber-450" 
                           : "bg-emerald-500"
                     }`}></span>
                     <span className={
@@ -257,14 +248,14 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
                         ? "text-red-400 font-bold" 
                         : student.status === "Suspicious" 
                           ? "text-amber-400" 
-                          : "text-emerald-400"
+                          : "text-emerald-400 font-bold"
                     }>
                       {student.status}
                     </span>
                   </div>
 
                   {/* Top-Right Risk Dial */}
-                  <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 rounded bg-slate-950/90 border border-slate-800 text-[10px] font-mono z-10">
+                  <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 rounded bg-slate-950/90 border border-slate-800 text-[10px] font-mono z-10 text-slate-300">
                     <span className="text-slate-500 uppercase">Risk:</span>
                     <span className={`font-bold ${isRedRisk ? "text-red-400" : isYellowRisk ? "text-amber-400" : "text-emerald-400"}`}>
                       {student.riskScore}%
@@ -290,21 +281,21 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
 
                   {/* AI Face Detection Overlays on high-risk students */}
                   {student.riskScore > 50 && (
-                    <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-red-950/80 border border-red-500/40 py-1 px-2 rounded font-mono text-[9px] text-red-300 flex justify-between items-center backdrop-blur-xs">
+                    <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-red-950/80 border border-red-500/40 py-1 px-2 rounded font-mono text-[9px] text-red-300 flex justify-between items-center whitespace-nowrap">
                       <span>[FLAG DETECTED]</span>
                       <span className="animate-pulse">AUTO-SAVING EVIDENCE</span>
                     </div>
                   )}
 
                   {/* Horizontal static lines or flicker */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-950/5 to-transparent pointer-events-none opacity-20"></div>
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-955/5 to-transparent pointer-events-none opacity-20"></div>
                 </div>
 
                 {/* Candidate Meta Info */}
                 <div className="p-4 space-y-3">
                   <div>
                     <h4 className="text-sm font-semibold text-white tracking-tight">{student.name}</h4>
-                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{student.examName}</p>
+                    <p className="text-xs text-slate-400 mt-0.5 line-clamp-1 font-sans">{student.examName}</p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-[10px] font-mono bg-slate-950 p-2 rounded-lg border border-slate-850">
@@ -323,7 +314,7 @@ export default function CommandCenter({ token, onSelectStudentForReview }: Comma
                   <div className="flex gap-2">
                     <button
                       onClick={() => onSelectStudentForReview(student.name)}
-                      className="flex-1 text-center py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-mono font-bold text-slate-200 border border-slate-705/80 transition-colors uppercase tracking-wider cursor-pointer flex items-center justify-center gap-1"
+                      className="flex-1 text-center py-1.5 rounded bg-slate-800 hover:bg-slate-705 text-xs font-mono font-bold text-slate-200 border border-slate-700 transition-colors uppercase tracking-wider cursor-pointer flex items-center justify-center gap-1"
                     >
                       <span>Manual Review</span>
                       <ExternalLink className="w-3 h-3 text-slate-400" />

@@ -1,13 +1,8 @@
 import React, { useState } from "react";
 import { Camera, ShieldCheck, UserCheck, RefreshCw } from "lucide-react";
 
-interface IdentityVerificationProps {
-  studentName: string;
-  onVerificationComplete: () => void;
-}
-
-export default function IdentityVerification({ studentName, onVerificationComplete }: IdentityVerificationProps) {
-  const [step, setStep] = useState<"align" | "capture" | "evaluating" | "success">("align");
+export default function IdentityVerification({ studentName, onVerificationComplete }) {
+  const [step, setStep] = useState("align");
   const [countdown, setCountdown] = useState(3);
 
   const startAnalysis = () => {
@@ -92,7 +87,7 @@ export default function IdentityVerification({ studentName, onVerificationComple
           )}
 
           {/* Canvas Static Filter Overlay */}
-          <div className="absolute inset-x-0 bottom-0 top-0 bg-gradient-to-b from-transparent via-cyan-950/5 to-transparent pointer-events-none opacity-20"></div>
+          <div className="absolute inset-x-0 bottom-0 top-0 bg-gradient-to-b from-transparent via-cyan-955/5 to-transparent pointer-events-none opacity-20"></div>
         </div>
 
         {/* Bottom instructions, buttons */}
@@ -100,7 +95,7 @@ export default function IdentityVerification({ studentName, onVerificationComple
           {step === "align" && (
             <button
               onClick={startAnalysis}
-              className="w-full py-3 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 font-bold font-mono text-xs uppercase tracking-wider rounded-xl shadow-md hover:shadow-teal-500/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-955 font-bold font-mono text-xs uppercase tracking-wider rounded-xl shadow-md hover:shadow-teal-500/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <Camera className="w-4 h-4" />
               Capture & Verify Biometrics
@@ -110,7 +105,7 @@ export default function IdentityVerification({ studentName, onVerificationComple
           {step === "success" && (
             <button
               onClick={onVerificationComplete}
-              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black font-mono text-xs uppercase tracking-widest rounded-xl shadow-lg hover:shadow-emerald-500/10 transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-955 font-black font-mono text-xs uppercase tracking-widest rounded-xl shadow-lg hover:shadow-emerald-500/10 transition-all cursor-pointer flex items-center justify-center gap-2"
             >
               <ShieldCheck className="w-4 h-4" />
               Approve & Launch Data Structures Exam
@@ -118,8 +113,8 @@ export default function IdentityVerification({ studentName, onVerificationComple
           )}
 
           {/* Privacy statement info */}
-          <div className="text-[10px] text-slate-500 leading-normal font-sans border-t border-slate-800/60 pt-3 text-center">
-            🔒 Institutional Biometric Privacy Policy: Facial calibration credentials are never stored externally or transmitted to public web spaces. Scanning handles verification locally within sandbox scopes.
+          <div className="text-[10px] text-slate-505 leading-normal font-sans border-t border-slate-800/60 pt-3 text-center">
+            🔒 Biometric Privacy Policy: Facial calibration credentials are never stored externally or transmitted to public spaces. Scanning handles verification locally within sandbox scopes.
           </div>
         </div>
 

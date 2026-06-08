@@ -15,7 +15,7 @@ app.use(express.json());
 // Simple custom JWT logic using SHA256 Hmac signing
 const JWT_SECRET = process.env.JWT_SECRET || "examaudit_pro_secret_key_987654321";
 
-function signToken(payload: { username: string; role: string; name: string }) {
+function signToken(payload) {
   const header = Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url");
   const payloadBase64 = Buffer.from(JSON.stringify({ ...payload, exp: Date.now() + 24 * 60 * 60 * 1000 })).toString("base64url");
   const signature = crypto
@@ -25,7 +25,7 @@ function signToken(payload: { username: string; role: string; name: string }) {
   return `${header}.${payloadBase64}.${signature}`;
 }
 
-function verifyToken(token: string): { username: string; role: string; name: string } | null {
+function verifyToken(token) {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
@@ -50,7 +50,7 @@ function verifyToken(token: string): { username: string; role: string; name: str
 }
 
 // Authentication middleware
-const authMiddleware = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+const authMiddleware = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Access denied. Token missing or invalid." });
@@ -60,7 +60,7 @@ const authMiddleware = async (req: express.Request, res: express.Response, next:
   if (!verified) {
     return res.status(401).json({ error: "Access token is invalid or expired." });
   }
-  (req as any).user = verified;
+  req.user = verified;
   next();
 };
 
@@ -149,7 +149,7 @@ app.post("/api/auth/register", async (req, res) => {
 
 // Get context of current logged in user from token
 app.get("/api/auth/me", authMiddleware, (req, res) => {
-  res.json({ user: (req as any).user });
+  res.json({ user: req.user });
 });
 
 
@@ -176,7 +176,7 @@ app.post("/api/questions", authMiddleware, async (req, res) => {
 
   await MongoModels.Audit.create({
     action: "Question Created",
-    user: (req as any).user.name,
+    user: req.user.name,
     timestamp: new Date().toISOString().replace("T", " ").substr(0, 19),
     details: `Created new ${difficulty} difficulty question for ${subject || "General"}.`,
     severity: "info"
@@ -192,7 +192,7 @@ app.delete("/api/questions/:id", authMiddleware, async (req, res) => {
   if (deleted) {
     await MongoModels.Audit.create({
       action: "Question Deleted",
-      user: (req as any).user.name,
+      user: req.user.name,
       timestamp: new Date().toISOString().replace("T", " ").substr(0, 19),
       details: `Deleted question ID ${id}.`,
       severity: "info"
@@ -301,7 +301,7 @@ app.post("/api/violation-incidents/adjudicate", authMiddleware, async (req, res)
     // Add audit log
     await MongoModels.Audit.create({
       action: "Incident Reviewed",
-      user: (req as any).user.name,
+      user: req.user.name,
       timestamp: new Date().toISOString().replace("T", " ").substr(0, 19),
       details: `Verdict '${verdict}' submitted for ${student}. Notification toggles: student=${notifyStudent}, dean=${escalateDean}`,
       severity: "info"
@@ -376,9 +376,9 @@ app.post("/api/appeals/resolve", authMiddleware, async (req, res) => {
     const student = appeal ? appeal.studentName : "Student";
     await MongoModels.Audit.create({
       action: "Appeal Resolved",
-      user: (req as any).user.name,
+      user: req.user.name,
       timestamp: new Date().toISOString().replace("T", " ").substr(0, 19),
-      details: `Appeal ${appeal?.caseId || id} resolved as '${status}' by ${(req as any).user.name}`,
+      details: `Appeal ${appeal?.caseId || id} resolved as '${status}' by ${req.user.name}`,
       severity: "info"
     });
     res.json({ success: true });
@@ -489,7 +489,7 @@ An array of objects:
     } else {
       throw new Error("Empty response from AI model");
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Gemini AI API generator error:", error);
     res.status(500).json({ error: "Failed to generate questions using AI: " + error.message });
   }

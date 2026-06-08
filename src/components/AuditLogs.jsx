@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Info, AlertTriangle, ShieldCheck, Search, Filter } from "lucide-react";
-import { SystemAudit } from "../types";
 
 export default function AuditLogs() {
-  const [logs, setLogs] = useState<SystemAudit[]>([]);
+  const [logs, setLogs] = useState([]);
   const [search, setSearch] = useState("");
-  const [severityFilter, setSeverityFilter] = useState<"ALL" | "info" | "warning" | "error">("ALL");
+  const [severityFilter, setSeverityFilter] = useState("ALL");
 
   const fetchLogs = async () => {
     try {
@@ -36,7 +35,7 @@ export default function AuditLogs() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h3 className="text-sm font-mono font-bold uppercase tracking-wider text-white">Departmental Audit Registry</h3>
-          <p className="text-xs text-slate-400 mt-1 leading-normal">
+          <p className="text-xs text-slate-400 mt-1 leading-normal font-sans">
             Verifiably track proctoring, administrative setups, registration updates, and candidate behavioral actions.
           </p>
         </div>
@@ -54,7 +53,7 @@ export default function AuditLogs() {
           </div>
 
           <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-850">
-            {(["ALL", "info", "warning", "error"] as const).map((sev) => (
+            {["ALL", "info", "warning", "error"].map((sev) => (
               <button
                 key={sev}
                 onClick={() => setSeverityFilter(sev)}
@@ -92,7 +91,7 @@ export default function AuditLogs() {
                 <td className="p-3 text-right">
                   <span className={`px-2 py-0.5 rounded text-[9px] uppercase font-bold justify-center inline-flex ${
                     log.severity === "error" 
-                      ? "bg-red-500/10 text-red-400 border border-red-500/20" 
+                      ? "bg-red-500/10 text-red-00 border border-red-500/20" 
                       : log.severity === "warning" 
                         ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" 
                         : "bg-teal-500/10 text-teal-400 border border-teal-500/20"

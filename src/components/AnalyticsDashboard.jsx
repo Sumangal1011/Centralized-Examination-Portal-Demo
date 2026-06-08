@@ -4,9 +4,9 @@ import {
 } from "lucide-react";
 
 export default function AnalyticsDashboard() {
-  const [exportLoading, setExportLoading] = useState<string | null>(null);
+  const [exportLoading, setExportLoading] = useState(null);
 
-  const triggerMockExport = (fmt: string) => {
+  const triggerMockExport = (fmt) => {
     setExportLoading(fmt);
     setTimeout(() => {
       setExportLoading(null);
@@ -28,8 +28,6 @@ export default function AnalyticsDashboard() {
   const trendLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
 
   // Chart 2: Exam Distribution by Difficulty (Donut Chart)
-  // Easy: 45% (emerald), Medium: 35% (amber), Hard: 20% (red)
-  // Visual donut uses circles with different strokes
   const donutData = [
     { value: 45, label: "Easy (45%)", color: "text-emerald-400 stroke-emerald-400" },
     { value: 35, label: "Medium (35%)", color: "text-amber-400 stroke-amber-400" },
@@ -37,7 +35,6 @@ export default function AnalyticsDashboard() {
   ];
 
   // Chart 3: Department Pass Rates (Bar Chart)
-  // Computer Science: 82%, Engineering: 74%, Mathematics: 89%, Physics: 68%, Business: 91%
   const barData = [
     { label: "CompSci", rate: 82, color: "bg-teal-400 text-teal-400" },
     { label: "Engineering", rate: 74, color: "bg-blue-400 text-blue-400" },
@@ -59,16 +56,16 @@ export default function AnalyticsDashboard() {
               <TrendingUp className="w-4 h-4 text-cyan-400" />
               Violation Trends Timeline
             </h3>
-            <span className="text-[10px] font-mono text-cyan-400 font-bold bg-cyan-950/40 px-2 py-0.5 rounded border border-cyan-500/10">3.4x peak flag</span>
+            <span className="text-[10px] font-mono text-cyan-400 font-bold bg-cyan-955/40 px-2 py-0.5 rounded border border-cyan-500/10">3.4x peak flag</span>
           </div>
 
           <div className="relative h-44 w-full bg-slate-950 rounded-xl overflow-hidden p-4 flex flex-col justify-between">
             {/* SVG custom line chart with hover highlights */}
             <svg className="w-full h-[120px] overflow-visible" viewBox="0 0 400 150">
               {/* Guides */}
-              <line x1="10" y1="30" x2="390" y2="30" className="stroke-slate-900 stroke-1 stroke-dashed" />
-              <line x1="10" y1="80" x2="390" y2="80" className="stroke-slate-900 stroke-1 stroke-dashed" />
-              <line x1="10" y1="130" x2="390" y2="130" className="stroke-slate-900 stroke-1 stroke-dashed" />
+              <line x1="10" y1="30" x2="390" y2="30" className="stroke-slate-90" strokeWidth="0.5" strokeDasharray="3,3" />
+              <line x1="10" y1="80" x2="390" y2="80" className="stroke-slate-90" strokeWidth="0.5" strokeDasharray="3,3" />
+              <line x1="10" y1="130" x2="390" y2="130" className="stroke-slate-90" strokeWidth="0.5" strokeDasharray="3,3" />
               
               {/* Trend Glow Background Line */}
               <polyline
@@ -91,11 +88,11 @@ export default function AnalyticsDashboard() {
               />
 
               {/* Data dots */}
-              <circle cx="30" cy="120" r="4.5" className="fill-slate-950 stroke-cyan-450 stroke-2 outline-none" />
-              <circle cx="100" cy="100" r="4.5" className="fill-slate-950 stroke-cyan-450 stroke-2 outline-none" />
-              <circle cx="170" cy="110" r="4.5" className="fill-slate-950 stroke-cyan-450 stroke-2 outline-none" />
-              <circle cx="240" cy="60" r="4.5" className="fill-slate-950 stroke-cyan-450 stroke-2 outline-none" />
-              <circle cx="310" cy="95" r="4.5" className="fill-slate-950 stroke-cyan-450 stroke-2 outline-none" />
+              <circle cx="30" cy="120" r="4.5" className="fill-slate-950 stroke-cyan-400 stroke-2 outline-none" />
+              <circle cx="100" cy="100" r="4.5" className="fill-slate-950 stroke-cyan-400 stroke-2 outline-none" />
+              <circle cx="170" cy="110" r="4.5" className="fill-slate-950 stroke-cyan-400 stroke-2 outline-none" />
+              <circle cx="240" cy="60" r="4.5" className="fill-slate-950 stroke-cyan-400 stroke-2 outline-none" />
+              <circle cx="310" cy="95" r="4.5" className="fill-slate-950 stroke-cyan-400 stroke-2 outline-none" />
               <circle cx="380" cy="40" r="5" className="fill-cyan-400 stroke-cyan-400 ring-4 ring-cyan-500/10 pointer-events-none" />
             </svg>
 
@@ -115,7 +112,7 @@ export default function AnalyticsDashboard() {
               <PieChart className="w-4 h-4 text-purple-400" />
               Curriculum Distribution
             </h3>
-            <span className="text-[10px] font-mono text-purple-400 bg-purple-950/40 px-2 py-0.5 rounded border border-purple-500/10">340 Total Questions</span>
+            <span className="text-[10px] font-mono text-purple-400 bg-purple-955/40 px-2 py-0.5 rounded border border-purple-500/10">340 Total Questions</span>
           </div>
 
           <div className="h-44 bg-slate-950 rounded-xl p-4 flex items-center justify-between">
@@ -159,7 +156,7 @@ export default function AnalyticsDashboard() {
               <BarChart3 className="w-4 h-4 text-emerald-400" />
               Departmental Pass Rates
             </h3>
-            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/10">80.2% Avg.</span>
+            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-955/40 px-2 py-0.5 rounded border border-emerald-500/10">80.2% Avg.</span>
           </div>
 
           <div className="h-44 bg-slate-950 rounded-xl p-4 flex flex-col justify-between font-mono text-[9px] text-slate-500">
@@ -208,7 +205,7 @@ export default function AnalyticsDashboard() {
             <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Top 5 Records</span>
           </div>
 
-          <div className="overflow-x-auto text-xs font-mono">
+          <div className="overflow-x-auto text-xs font-mono text-slate-300">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-slate-850 text-slate-400 font-bold bg-slate-950/20">
