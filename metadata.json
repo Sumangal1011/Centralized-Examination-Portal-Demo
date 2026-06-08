@@ -1,0 +1,6 @@
+{
+  "name": "ExamAudit Pro",
+  "description": "Secure full-stack academic integrity & exam suite with live proctoring dashboard, Secure Exams, manual reviews, automated tab-switch notifications, AI question bank generation, and Appeals Management.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
