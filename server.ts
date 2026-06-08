@@ -8,8 +8,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 const app = express();
 const PORT = 3000;
 
-// Initialize the database simulation
-initDB();
+// Database is initialized asynchronously inside setupServer() below
 
 app.use(express.json());
 
@@ -499,6 +498,7 @@ An array of objects:
 
 // Serve static frontend files in production, use Vite middleware in dev
 async function setupServer() {
+  await initDB();
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },

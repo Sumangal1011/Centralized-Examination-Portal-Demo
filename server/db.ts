@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { MongoClient, Db } from "mongodb";
 
 // Simulating MongoDB shell/Mongoose with file-backed storage
 const DB_FILE = path.join(process.cwd(), "data", "db_store.json");
@@ -68,8 +69,42 @@ const DEFAULT_DB: DBStructure = {
   ]
 };
 
-// Initialize DB if file does not exist or is empty
-export function initDB() {
+// Global MongoDB Database references
+let mongoClient: MongoClient | null = null;
+let mongoDb: Db | null = null;
+const mongoUri = process.env.MONGODB_URI;
+
+// Initialize dynamic connection and seeds
+export async function initDB() {
+  if (mongoUri) {
+    try {
+      console.log("Connecting to real MongoDB database at:", mongoUri.split("@").pop());
+      mongoClient = new MongoClient(mongoUri);
+      await mongoClient.connect();
+      mongoDb = mongoClient.db();
+      console.log("Successfully connected to MongoDB.");
+
+      // Seed any missing collections
+      const collections = Object.keys(DEFAULT_DB) as (keyof DBStructure)[];
+      for (const colName of collections) {
+        const col = mongoDb.collection(colName);
+        const count = await col.countDocuments();
+        if (count === 0) {
+          console.log(`Seeding MongoDB collection: ${colName}`);
+          await col.insertMany(DEFAULT_DB[colName]);
+        }
+      }
+    } catch (e) {
+      console.error("MongoDB init failed, reverting to local disk fallback:", e);
+      mongoDb = null;
+      initFileDB();
+    }
+  } else {
+    initFileDB();
+  }
+}
+
+function initFileDB() {
   if (!fs.existsSync(DB_FILE)) {
     saveToDisk(DEFAULT_DB);
   } else {
@@ -116,6 +151,15 @@ class Collection<T extends { _id: string }> {
   }
 
   async find(query: Partial<T> = {}): Promise<T[]> {
+    if (mongoDb) {
+      try {
+        const list = await mongoDb.collection(this.key).find(query as any).toArray();
+        return list as unknown as T[];
+      } catch (err) {
+        console.error(`MongoDB find error on ${this.key}:`, err);
+      }
+    }
+
     const data = readFromDisk();
     const list = (data[this.key] || []) as T[];
     return list.filter((item: any) => {
@@ -129,17 +173,37 @@ class Collection<T extends { _id: string }> {
   }
 
   async findOne(query: Partial<T>): Promise<T | null> {
+    if (mongoDb) {
+      try {
+        const item = await mongoDb.collection(this.key).findOne(query as any);
+        return item as unknown as T | null;
+      } catch (err) {
+        console.error(`MongoDB findOne error on ${this.key}:`, err);
+      }
+    }
+
     const records = await this.find(query);
     return records.length > 0 ? records[0] : null;
   }
 
   async create(record: Omit<T, "_id"> & Partial<{ _id: string }>): Promise<T> {
-    const data = readFromDisk();
-    const list = data[this.key] || [];
+    const generatedId = record._id || Math.random().toString(36).substr(2, 9);
     const newRecord = {
-      _id: record._id || Math.random().toString(36).substr(2, 9),
+      _id: generatedId,
       ...record
     } as unknown as T;
+
+    if (mongoDb) {
+      try {
+        await mongoDb.collection(this.key).insertOne(newRecord as any);
+        return newRecord;
+      } catch (err) {
+        console.error(`MongoDB create error on ${this.key}:`, err);
+      }
+    }
+
+    const data = readFromDisk();
+    const list = data[this.key] || [];
     list.push(newRecord);
     data[this.key] = list;
     saveToDisk(data);
@@ -147,6 +211,15 @@ class Collection<T extends { _id: string }> {
   }
 
   async updateOne(query: Partial<T>, updates: Partial<T>): Promise<boolean> {
+    if (mongoDb) {
+      try {
+        const result = await mongoDb.collection(this.key).updateOne(query as any, { $set: updates });
+        return result.modifiedCount > 0 || result.matchedCount > 0;
+      } catch (err) {
+        console.error(`MongoDB updateOne error on ${this.key}:`, err);
+      }
+    }
+
     const data = readFromDisk();
     const list = data[this.key] || [];
     let updated = false;
@@ -174,6 +247,15 @@ class Collection<T extends { _id: string }> {
   }
 
   async deleteOne(query: Partial<T>): Promise<boolean> {
+    if (mongoDb) {
+      try {
+        const result = await mongoDb.collection(this.key).deleteOne(query as any);
+        return result.deletedCount > 0;
+      } catch (err) {
+        console.error(`MongoDB deleteOne error on ${this.key}:`, err);
+      }
+    }
+
     const data = readFromDisk();
     const list = data[this.key] || [];
     const initialLen = list.length;

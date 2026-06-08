@@ -17,7 +17,7 @@ interface QuestionItem {
 }
 
 export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProps) {
-  // Configured questions
+  // Configured questions (Full 20 items to activate all indicator bubbles)
   const examQuestions: QuestionItem[] = [
     {
       number: 1,
@@ -73,6 +73,171 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
         "None of the above."
       ],
       correct: 0
+    },
+    {
+      number: 6,
+      text: "What is the auxiliary space complexity of standard in-place Quicksort on average?",
+      options: [
+        "O(log N) due to stack allocations during pivot recursion.",
+        "O(1) absolute constant memory.",
+        "O(N) representing shadow partitions.",
+        "O(N^2) representing maximum deep stacks."
+      ],
+      correct: 0
+    },
+    {
+      number: 7,
+      text: "Which self-balancing binary search tree ensures that lookup, insertion, and deletion take O(log N) and heights of subtrees differ by at most 1?",
+      options: [
+        "AVL Tree",
+        "Splay Tree",
+        "B-Tree",
+        "Segment Tree"
+      ],
+      correct: 0
+    },
+    {
+      number: 8,
+      text: "In a classic min-heap structure, where is the smallest key element consistently located?",
+      options: [
+        "The root node at logical index 0 (or 1 depending on array offset).",
+        "Any of the terminal leaf nodes.",
+        "The absolute rightmost child node.",
+        "The middle element of the array representation."
+      ],
+      correct: 0
+    },
+    {
+      number: 9,
+      text: "What is the mathematical amortized average-case lookup complexity of a well-balanced Hash Table?",
+      options: [
+        "O(1) constant time complexity.",
+        "O(log N) dynamic lookup.",
+        "O(N) linear traversal.",
+        "O(N log N) sorted comparison."
+      ],
+      correct: 0
+    },
+    {
+      number: 10,
+      text: "Which standard data structure adheres strictly to the First-In, First-Out (FIFO) access policy?",
+      options: [
+        "Queue data structure.",
+        "Stack data structure.",
+        "Priority Heap structure.",
+        "Circular doubly linked list."
+      ],
+      correct: 0
+    },
+    {
+      number: 11,
+      text: "Which graph traversal algorithm utilizes a FIFO queue container for tracking search frontiers?",
+      options: [
+        "Breadth-First Search (BFS).",
+        "Depth-First Search (DFS).",
+        "Dijkstra's shortest path solver.",
+        "Tarjan's strongly connected components solver."
+      ],
+      correct: 0
+    },
+    {
+      number: 12,
+      text: "Which specialized tree data structure works optimally for fast prefixes dictionary looking and lookup key searches?",
+      options: [
+        "Trie (Prefix Tree).",
+        "Segment Tree.",
+        "Fenwick Tree (BIT).",
+        "Interval Search Tree."
+      ],
+      correct: 0
+    },
+    {
+      number: 13,
+      text: "What is the worst-case asymptotic time complexity of the Floyd-Warshall algorithm for finding short-paths between all pairs?",
+      options: [
+        "O(V^3) representing triple nested vertex iteration loops.",
+        "O(V^2 log V) representing repeated Dijkstra.",
+        "O(E log V) representing heap modifications.",
+        "O(V * E) representing classic Bellman-Ford paths."
+      ],
+      correct: 0
+    },
+    {
+      number: 14,
+      text: "Which structure is most appropriate for tracking node partition connectivity in Kruskal's MST algorithm?",
+      options: [
+        "Disjoint-Set Union (Union-Find) with path compression.",
+        "Priority Queue min-heap array.",
+        "Adjacency list list pointer.",
+        "Auxiliary stack structure."
+      ],
+      correct: 0
+    },
+    {
+      number: 15,
+      text: "How much time is required to partition an array of length N during a standard quicksort iteration step?",
+      options: [
+        "O(N) linear scan using left-right scanner pointers.",
+        "O(log N) partition splits.",
+        "O(N log N) recursive sorted scanning.",
+        "O(1) swap operations."
+      ],
+      correct: 0
+    },
+    {
+      number: 16,
+      text: "What is the runtime efficiency of completing a dynamic binary search query on a pre-sorted array containing N elements?",
+      options: [
+        "O(log N) lookup time.",
+        "O(1) search index lookup.",
+        "O(N) complete scan.",
+        "O(N log N) sorting setup."
+      ],
+      correct: 0
+    },
+    {
+      number: 17,
+      text: "Which balancing layout applies to standard 2-3 Search Trees in high performance datasets?",
+      options: [
+        "Logarithmic tree depth height of O(log N).",
+        "Fully sequential iteration tracking.",
+        "Constant complexity operations.",
+        "Dynamic clustering layout."
+      ],
+      correct: 0
+    },
+    {
+      number: 18,
+      text: "Which tree structure is heavily utilized to build physical indices across relational database layouts?",
+      options: [
+        "B+ Tree (balancing wide nodes and leaf links).",
+        "Standard unbalanced Binary Search Tree.",
+        "Binary heap array representation.",
+        "Segment tree."
+      ],
+      correct: 0
+    },
+    {
+      number: 19,
+      text: "Which traversal technique behaves equivalently to a Depth-First Search (DFS) if simulated iteratively using an explicit Stack?",
+      options: [
+        "DFS traversal with custom stack frames.",
+        "Standard level-order queuing.",
+        "Greedy Prim algorithms.",
+        "Kruskal forest traversal."
+      ],
+      correct: 0
+    },
+    {
+      number: 20,
+      text: "What is the asymptotic time complexity of the Floyd-Heapsort heap construction phase on arbitrary arrays containing N keys?",
+      options: [
+        "O(N) linear time heap construction.",
+        "O(N log N) sorting insertion loop.",
+        "O(log N) dynamic lookup.",
+        "O(N^2) deep iterations."
+      ],
+      correct: 0
     }
   ];
 
@@ -88,6 +253,7 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
 
   // Tab switch detected warning metrics (Warining 1 of 3)
   const [tabSwitchWarning, setTabSwitchWarning] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [warningsCount, setWarningsCount] = useState(0);
 
   useEffect(() => {
@@ -152,9 +318,7 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
   };
 
   const handleFinish = () => {
-    if (window.confirm("Are you sure you want to finalize and submit this exam session? Your integrity scoring profiles will be audited.")) {
-      onExamFinish();
-    }
+    setShowConfirmModal(true);
   };
 
   const manualTriggerTabSwitchDemo = () => {
@@ -459,6 +623,40 @@ export default function ActiveExam({ studentName, onExamFinish }: ActiveExamProp
               I Acknowledge & Resume Examination
             </button>
 
+          </div>
+        </div>
+      )}
+
+      {/* --- CUSTOM IN-APP SUBMISSION CONFIRMATION MODAL --- */}
+      {showConfirmModal && (
+        <div id="submit-confirm-modal" className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in font-sans">
+          <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 text-center shadow-2xl">
+            <div className="w-12 h-12 bg-teal-500/10 border border-teal-500/30 rounded-full flex items-center justify-center text-teal-400 mx-auto">
+              <HelpCircle className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-white uppercase font-mono tracking-wider">Finalize Examination?</h3>
+              <p className="text-xs text-slate-400 leading-normal max-w-sm mx-auto">
+                Are you sure you want to finalize and submit this exam session? Your active biometric scans and integrity logs will be submitted to the academic board.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="py-2 bg-slate-800 hover:bg-slate-750 text-slate-300 font-semibold text-xs font-mono uppercase rounded-lg border border-slate-700 cursor-pointer"
+              >
+                No, Resume
+              </button>
+              <button
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  onExamFinish();
+                }}
+                className="py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs font-mono uppercase rounded-lg shadow-md cursor-pointer"
+              >
+                Yes, Submit
+              </button>
+            </div>
           </div>
         </div>
       )}

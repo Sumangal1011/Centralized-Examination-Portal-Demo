@@ -309,7 +309,7 @@ export default function App() {
           <ViolationReview 
             token={token} 
             selectedStudentName={selectedStudentForReview}
-            onAdjudicationSuccess={() => {}}
+            onAdjudicationSuccess={() => setActiveTab("overview")}
           />
         )}
 
